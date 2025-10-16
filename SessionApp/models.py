@@ -19,7 +19,7 @@ class Session(models.Model):
     update_at=models.DateTimeField(auto_now=True)
     #conference=models.ForeignKey("ConferenceApp.Conference")
     conference=models.ForeignKey(Conference, on_delete=models.CASCADE, related_name="sessions")
-
+    
     def clean(self):
         if self.conference:
             if not (self.conference.start_date <= self.session_day <= self.conference.end_date):
@@ -28,14 +28,13 @@ class Session(models.Model):
                                    f"{self.conference.start_date} et {self.conference.end_date}."
                 })
 
-        # Vérifier que l’heure de fin est supérieure à celle de début
+
         if self.end_time <= self.start_time:
             raise ValidationError({
                 'end_time': "L'heure de fin doit être supérieure à l'heure de début."
             })
 
     def save(self, *args, **kwargs):
-        # Appelle la validation avant la sauvegarde
         self.full_clean()
         super().save(*args, **kwargs)
 

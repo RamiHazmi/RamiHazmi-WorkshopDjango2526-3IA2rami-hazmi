@@ -1,8 +1,8 @@
 from django.db import models
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
-from django.core.validators import MinLengthValidator
-from django.core.validators import FileExtensionValidator
+from django.core.validators import MinLengthValidator,FileExtensionValidator
+
 from django.utils import timezone
 import random, string
 
@@ -12,8 +12,6 @@ title_validator = RegexValidator(
     regex='^[a-zA-Z\s-]+$',
     message="ce champ ne doit contenir que des lettres"
 )
-from django.core.validators import MinLengthValidator
-from django.core.exceptions import ValidationError
 
 class Conference(models.Model):
     conference_id = models.AutoField(primary_key=True)  # int primary key
@@ -25,7 +23,8 @@ class Conference(models.Model):
         ("SC", "Social Sciences & Education"),
         ("IT", "Interdisciplinary Themes."),
     ]
-    
+    theme = models.CharField(max_length=50, choices=THEME)
+
     location = models.CharField(max_length=50)
     description = models.TextField(
         validators=[MinLengthValidator(30, message="Vous devez saisir au moins 30 caractères")]
@@ -34,7 +33,8 @@ class Conference(models.Model):
     end_date = models.DateField()    # date
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
-
+    def __str__(self):
+        return f"la conference a comme titre {self.name}"
     def clean(self):
         # Vérifie que les dates existent avant de comparer
         if self.start_date and self.end_date:
@@ -67,23 +67,31 @@ class Submission(models.Model):
     Submission_date = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
-
     user = models.ForeignKey("UserApp.User", on_delete=models.CASCADE, related_name="submissions")
     Conference = models.ForeignKey(Conference, on_delete=models.CASCADE, related_name="submissions")
 
-
+    
     def clean(self):
-        # ✅ 1. Vérifier que la conférence est à venir
-        if self.Conference.start_date < timezone.now().date():
-            raise ValidationError("La soumission ne peut être faite que pour des conférences à venir.")
+        if self.Conference.start_date : 
+            if self.Conference.start_date < timezone.now().date() and self.Submission_date > self.Conference.start_date:
+                raise ValidationError("La soumission ne peut être faite que pour des conférences à venir.")
 
-        # ✅ 2. Vérifier que les mots-clés ne dépassent pas 10
-        if self.keywords:
+        
+        ''' if self.keywords:
             keyword_list = [k.strip() for k in self.keywords.split(",") if k.strip()]
             if len(keyword_list) > 10:
-                raise ValidationError({"keywords": "Vous ne pouvez pas saisir plus de 10 mots-clés."})
-
-        # ✅ 3. Limiter le nombre de soumissions par utilisateur à 3 par jour
+                raise ValidationError({"keywords": "Vous ne pouvez pas saisir plus de 10 mots-clés."})'''
+        keyword_list=[]
+        if self.keywords :
+            for k in self.keywords.split(",") :
+                k=k.strip()
+                if k:
+                    keyword_list.append(k)
+                    if len(keyword_list) > 10:
+                        raise ValidationError({"keywords": "Vous ne pouvez pas saisir plus de 10 mots-clés."})
+                    
+        
+     
         if self.user_id:
             today = timezone.now().date()
             submissions_today = Submission.objects.filter(
