@@ -1,0 +1,8 @@
+<h1>Formulaire de modifier</h1> 
+<form method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit">Enregister</button>
+    <a href="{% url 'liste_conferences' %}">Annuler</a>
+
+</form>
