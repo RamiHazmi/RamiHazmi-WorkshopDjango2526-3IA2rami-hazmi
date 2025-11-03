@@ -3,6 +3,7 @@ from .models import Conference
 from django.views.generic import ListView , DetailView , CreateView, DeleteView , UpdateView
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
+from .forms import ConferenceForm
 
 # Create your views here.
 
@@ -25,7 +26,8 @@ class ConferenceDetails(DetailView):
 class ConferenceCreate(CreateView):
     model= Conference
     template_name ="conferences/form.html"
-    fields = "__all__"
+    #fields = "__all__"
+    form_class = ConferenceForm
     success_url = reverse_lazy("liste_conferences")
 
 class ConferenceDelete(DeleteView):
@@ -35,8 +37,7 @@ class ConferenceDelete(DeleteView):
 
 class ConferenceUpdate(UpdateView):
     model = Conference
-    template_name = "conferences/modifier.html"
+    template_name = "conferences/form.html"
     fields = "__all__"
-
     success_url = reverse_lazy('liste_conferences')
     

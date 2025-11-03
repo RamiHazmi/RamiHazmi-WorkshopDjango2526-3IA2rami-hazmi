@@ -1,6 +1,13 @@
-<h1>Formulaire d'ajout</h1>
+{% extends 'base.html' %}
+{% block content %}
+{% if view.object.pk %}
+<h1>Formulaire de modifier {{object.name}}</h1>
+{% else %}
+<h1>Formulaire d'ajout </h1>
+{% endif %}
 <form method="post">
     {% csrf_token %}
     {{form.as_p}}
     <button type="submit">Enregister</button>
 </form>
+{% endblock %}
