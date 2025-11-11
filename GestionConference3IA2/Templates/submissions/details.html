@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1> Détails soumission avec le titre {{submission.title}}</h1>
+<p> résumé  : {{submission.abstract}}</p>
+<p> mot cles :  {{submission.keywords}}</p>
+<p> fichier pdf : {{submission.paper}}</p>
+<p> statut : {{submission.status}}</p>
+<p> conference liee : {{submission.conference.name}}</p>
+<p> auteur : {{submission.user.username}}</p>
+
+<p>Fichier PDF : <a href="{{ submission.paper.url }}" download> Télécharger le PDF </a></p>
+
+{% endblock %}

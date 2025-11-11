@@ -1,15 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+
 </head>
 <body>
     <nav>
-        <a>home</a>
-        <a href="{% url 'liste_conferences' %}">Conference</a>
-        <a>COntact</a>
+        <a>Home</a>
+        <a href="{% url 'liste_conferences' %}">Conférences</a>
+                <a href="{%url 'submission_list' %}">submission</a>
+
+        <a>Contact</a>
+        {% if user.is_authenticated %}
+         <a> {{user.username}}</a>
+         <a href="{% url 'logout' %}"> Logout</a>
+        {% else %}
+
+         <a href="{% url 'login' %}">Connexion</a>
+         <a href="{% url 'register' %}">Inscription </a>
+         {% endif %}
     </nav>
     {% block content %}
     {% endblock %}
@@ -17,4 +24,5 @@
         <p>Workshop 25/26 - Django 3IA2</p>
     </footer>
 </body>
+
 </html>

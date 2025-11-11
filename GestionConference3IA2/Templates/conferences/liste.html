@@ -1,28 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>La liste des conférences</h1>
-<a href="{% url 'conference_add' %}">ajout</a>
+   {% if user.is_authenticated  and user.role == "commitee" %} 
+<a href="{% url 'conference_add'  %}">Ajouter une conférence</a>
+ {% endif %}
 <table border="1">
-    <tr>
-        <td>Title</td>
-        <td>Theme</td>
-        <td>Date de conférences</td>
-        <td>Actions</td>
-    </tr>
 
+    <tr><td>Title</td><td>Theme</td> <td>Date de conférences</td><td>Actions</td></tr>
+  
     {% for c in liste %}
-    
-
     <tr>
         <td>{{ c.name }}</td>
-        <td>{{ c.theme }}</td>
-        <td>{{ c.start_date }} - {{ c.end_date }}</td>
-        <td>
-            <a href="{% url 'conference_details' c.pk %}">Détails</a> |
-            <a href="{% url 'conference_delete' c.pk %}">Supprimer</a> |
-            <a href="{% url 'conference_update' c.pk %}">Modifier</a> |
-        </td>
+        <td>{{c.theme}}</td>
+        <td>{{c.start_date}} - {{c.end_date}}</td>
+        <td><a href="{% url 'conference_details' c.pk %}">Détails</a>
+            {% if user.is_authenticated  and user.role == "commitee" %}
+        <a href="{% url 'conference_update' c.pk %}">Update</a>
+     <a href="{% url 'conference_delete' c.pk %}">Supprimer</a></td>
+     {% endif %}
     </tr>
     {% endfor %}
 </table>
+
 {% endblock %}
